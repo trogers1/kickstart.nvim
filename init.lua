@@ -157,6 +157,12 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+-- Add `spell` for all filetypes (may want to set for specific filetypes at some point)
+-- May want to use vim.opt_local as well (https://github.com/neovim/neovim/issues/14670#issuecomment-852208784)
+-- https://neovim.io/doc/user/spell.html#_2.-remarks-on-spell-checking
+vim.opt.spell = true
+vim.opt.spelllang = 'en_us'
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -414,6 +420,9 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+
+      -- Format current buffer
+      vim.keymap.set('n', '<leader>fm', require('conform').format, { desc = '[F]or[m]at current buffer' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -686,7 +695,7 @@ require('lazy').setup({
       stop_after_first = true,
       format_on_save = {
         timeout_ms = 500,
-        lsp_fallback = true,
+        -- lsp_fallback = true,
       },
       formatters_by_ft = {
         lua = { 'stylua' },
@@ -697,12 +706,12 @@ require('lazy').setup({
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
-        javascript = { 'prettierd', 'prettier' },
-        javascriptreact = { 'prettierd', 'prettier' },
-        typescript = { 'prettierd', 'prettier' },
-        typescriptreact = { 'prettierd', 'prettier' },
-        json = { 'prettierd', 'prettier' },
-        jsonc = { 'prettierd', 'prettier' },
+        javascript = { 'prettier' },
+        javascriptreact = { 'prettier' },
+        typescript = { 'prettier' },
+        typescriptreact = { 'prettier' },
+        json = { 'prettier' },
+        jsonc = { 'prettier' },
       },
     },
   },
