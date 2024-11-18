@@ -27,4 +27,4 @@
   - `ff` find file with a filename that matches your search term (EXCLUDES dotfiles, hidden files, gitignore)
   - `fa` find file with a filename that matches your search term (INCLUDING hidden files, dotfiles, etc.)
   - `fw` find file with contents that match your search term (INCLUDING hidden files, dotfiles, etc.)
-
+- `z=` when highlighting miss-spelled word will show alternatives to change to
