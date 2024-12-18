@@ -420,6 +420,9 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader>tt', function()
+        require('telescope.builtin').colorscheme { enable_preview = true }
+      end, { desc = '[th] Find and preview [t]elescope [t]hemes' })
 
       -- Format current buffer
       vim.keymap.set('n', '<leader>fm', require('conform').format, { desc = '[F]or[m]at current buffer' })
