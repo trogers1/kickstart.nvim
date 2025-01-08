@@ -29,3 +29,5 @@
   - `fw` find file with contents that match your search term (INCLUDING hidden files, dotfiles, etc.)
 - `z=` when highlighting miss-spelled word will show alternatives to change to
 - `Shift-j` joins the next line to the current line (removing the line break)
+- `Lazy` to check on installations
+- `:LspInfo` to debug LSP issues
