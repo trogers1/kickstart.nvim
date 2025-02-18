@@ -1,10 +1,10 @@
 - `ci<thing like quote>` changed inside <thing>. This will cut all contents within a string, for example.
-- `f<char>` brings me to the next instance of that character on the same line (e.g. "find <char>"). Capital F for backward.
+- `f<char>` brings me to the next instance of that character on the same line (e.g. "find <char>"). Capital `F` for backward.
 - `gd` when highlighting a function is "go to definition" for a function of `gf` on a file path to go to the file
     - `Ctrl-6` to return to the previous buffer (where you jumped from, potentially not a different buffer)
 - `<num>G` is how you go to a specific line number
 - `<Leader>-x` closes the current buffer (file)
-- `yy` `P` yanks the whole like and PUTs it below the current line
+- `yy` `P` yanks the whole line and PUTs it above the current line
 - `Shift-Down` OR `Ctrl-d` scrolls down by a half page. `Ctrl-u` scrolls a half screen up.
 - `:bd` will delete the current buffer
 - `q<anything>` from the Normal mode to start recording a Macro. Then end recording by returning to Normal mode and pressing `q`. Play your macro with `@<whatever you used>`.
@@ -29,3 +29,5 @@
   - `fw` find file with contents that match your search term (INCLUDING hidden files, dotfiles, etc.)
 - `z=` when highlighting miss-spelled word will show alternatives to change to
 - `Shift-j` joins the next line to the current line (removing the line break)
+- `:LspInfo` get's info from the current LSP (maybe typescript, if you're struggling with something)
+  - For further debugging: `:LspLog`
