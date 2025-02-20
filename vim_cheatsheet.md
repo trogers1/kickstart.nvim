@@ -31,3 +31,6 @@
 - `Shift-j` joins the next line to the current line (removing the line break)
 - `:LspInfo` get's info from the current LSP (maybe typescript, if you're struggling with something)
   - For further debugging: `:LspLog`
+- `Lazy` to check on installations
+- `:LspInfo` to debug LSP issues
+- `:checkhealth` to check the status of a lot of the plugins (most of the neovim ecosystem). Very useful.
