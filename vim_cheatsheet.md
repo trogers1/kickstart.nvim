@@ -1,3 +1,9 @@
+> Legend: 
+> `<Leader>` is 'Space'
+> `<c-o>` is 'Ctrl-o'
+> `<m-q>` === `<alt-q>` because 'm' is 'meta', which is 'left alt'
+> `<CR>` is 'Return|Enter'
+
 - `ci<thing like quote>` changed inside <thing>. This will cut all contents within a string, for example.
 - `f<char>` brings me to the next instance of that character on the same line (e.g. "find <char>"). Capital `F` for backward.
 - `gd` when highlighting a function is "go to definition" for a function of `gf` on a file path to go to the file
@@ -34,3 +40,10 @@
 - `Lazy` to check on installations
 - `:LspInfo` to debug LSP issues
 - `:checkhealth` to check the status of a lot of the plugins (most of the neovim ecosystem). Very useful.
+- `<c-q>` to add my search results to a new 'Quick Fix List' to 'pin' them to return to. 
+- `<alt-q>` will add a new thing to your 'Quick Fix List'
+  - `<tab>`: Marks a file/search result. Do this to several telescope results, then `<alt-q>` 
+- `<c-[hjkl]`: move between windows the same way you move you cursor, but while holding Ctrl.
+- Telescope:
+  - `c-CR` to enter 'fuzzy refine' mode to further refine your search
+  - `<Leader-SR>` is Search Resume, to resume your last search
