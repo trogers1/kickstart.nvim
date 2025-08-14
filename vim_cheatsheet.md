@@ -47,3 +47,6 @@
 - Telescope:
   - `c-CR` to enter 'fuzzy refine' mode to further refine your search
   - `<Leader-SR>` is Search Resume, to resume your last search
+- `<leader-gd>` is how you view all of the changes relative to the staging branch. 
+  - Pair with `c-q` to add all of these to the quick fix list for jumping between them
+- Rather than `c-6` (ctrl-^), use `<c-o>` and `<c-i>` to move forward and backward through you recent places (your 'jumplist'), which you can view the whole stack of with `:jumps`

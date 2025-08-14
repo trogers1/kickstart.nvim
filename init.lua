@@ -426,7 +426,12 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>tt', function()
         require('telescope.builtin').colorscheme { enable_preview = true }
       end, { desc = '[th] Find and preview [t]elescope [t]hemes' })
-
+      vim.keymap.set('n', '<leader>gd', function()
+        require('telescope.builtin').git_files {
+          git_command = { 'git', 'diff', '--name-only', 'origin/staging..HEAD' },
+          prompt_title = 'Files Changed vs origin/staging',
+        }
+      end, { desc = 'Diff vs staging' })
       -- Format current buffer
       vim.keymap.set('n', '<leader>fm', require('conform').format, { desc = '[F]or[m]at current buffer' })
 
