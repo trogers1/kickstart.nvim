@@ -432,6 +432,13 @@ require('lazy').setup({
           prompt_title = 'Files Changed vs origin/staging',
         }
       end, { desc = 'Diff vs staging' })
+
+      -- Git-related Telescope keybindings
+      vim.keymap.set('n', '<leader>gc', '<cmd>Telescope git_commits<cr>', { desc = 'Git [C]ommits' })
+      vim.keymap.set('n', '<leader>gf', '<cmd>Telescope git_bcommits<cr>', { desc = 'Git [F]ile History' })
+      vim.keymap.set('n', '<leader>gb', '<cmd>Telescope git_branches<cr>', { desc = 'Git [B]ranches' })
+      vim.keymap.set('n', '<leader>gs', '<cmd>Telescope git_status<cr>', { desc = 'Git [S]tatus' })
+
       -- Format current buffer
       vim.keymap.set('n', '<leader>fm', require('conform').format, { desc = '[F]or[m]at current buffer' })
 
@@ -971,6 +978,19 @@ require('lazy').setup({
     },
   },
 })
+
+-- Required for custom aerial plugin
+require('aerial').setup {
+  -- optionally use on_attach to set keymaps when aerial has attached to a buffer
+  on_attach = function(bufnr)
+    -- Jump forwards/backwards with '{' and '}'
+    vim.keymap.set('n', '{', '<cmd>AerialPrev<CR>', { buffer = bufnr })
+    vim.keymap.set('n', '}', '<cmd>AerialNext<CR>', { buffer = bufnr })
+  end,
+}
+
+-- You probably also want to set a keymap to toggle aerial
+vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle!<CR>')
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
