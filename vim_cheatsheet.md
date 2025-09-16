@@ -33,6 +33,7 @@
 | `q<letter>` | Start recording macro |
 | `q` | Stop recording macro |
 | `@<letter>` | Play recorded macro |
+| `<C-a` | Increment a number under the cursor 🤯 |
 
 ---
 
@@ -47,6 +48,7 @@
 | `<C-i>` | Jump forward in jumplist |
 | `<C-^>` | Switch to previous buffer |
 | `:jumps` | View entire jumplist |
+| `<Leader-a>` | Toggle Aerial (file tree/navigator)
 
 ### Scrolling
 | Command | Description |
