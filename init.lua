@@ -641,7 +641,7 @@ require('lazy').setup({
         jsonls = {},
         pyright = {},
         rust_analyzer = {},
-        terraform_lsp = {},
+        terraform = {},
         yamlls = {},
         nginx_language_server = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
