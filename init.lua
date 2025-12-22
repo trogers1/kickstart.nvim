@@ -636,10 +636,14 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- clangd = {},
-        -- gopls = {},
+        actionlint = {},
+        gopls = {},
         jsonls = {},
         pyright = {},
-        -- rust_analyzer = {},
+        rust_analyzer = {},
+        terraform_lsp = {},
+        yamlls = {},
+        nginx_language_server = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -651,6 +655,7 @@ require('lazy').setup({
         -- Custom webdev servers
         html = {},
         cssls = {},
+        tailwindcss = {},
         prettier = {
           cli_options = {
             semi = true,
