@@ -1,3 +1,5 @@
+local M = {}
+
 local function setup_snyk()
   if vim.g.snyk_setup_done then
     return
@@ -80,14 +82,12 @@ vim.api.nvim_create_user_command('SnykToggle', function()
   end
 end, { desc = 'Toggle Snyk LSP' })
 
-return {
-  {
-    'neovim/nvim-lspconfig',
-    config = function()
-      if vim.g.snyk_enabled == false then
-        return
-      end
-      setup_snyk()
-    end,
-  },
-}
+function M.setup()
+  if vim.g.snyk_enabled == false then
+    return
+  end
+
+  setup_snyk()
+end
+
+return M

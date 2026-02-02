@@ -710,6 +710,8 @@ require('lazy').setup({
           end,
         },
       }
+
+      require('custom.snyk').setup()
     end,
   },
 
