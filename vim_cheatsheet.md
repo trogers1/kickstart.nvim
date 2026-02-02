@@ -26,6 +26,8 @@
 | `P` | Put (paste) above current line |
 | `p` | Put (paste) below current line |
 | `J` | Join next line to current line |
+| `:%s/<FIND_PATTERN>/<REPLACE_PATTERN>` | Find-replace a string in the file (append `/g` to replace multiple instances on the same line, rather than just the first) |
+| `:%s/<FIND_PATTERN>\C/<REPLACE_PATTERN>` | Add `\C` to make the find pattern case-sensitive |
 
 ### Macros
 | Command | Description |
@@ -48,7 +50,11 @@
 | `<C-i>` | Jump forward in jumplist |
 | `<C-^>` | Switch to previous buffer |
 | `:jumps` | View entire jumplist |
-| `<Leader-a>` | Toggle Aerial (file tree/navigator)
+| `<Leader-a>` | Toggle Aerial (file tree/navigator) |
+| `<C-w>-` | Decrease buffer height (prepend number to `-` to do many at once)|
+| `<C-w>+` | Increase buffer height (prepend number to `+` to do many at once)|
+| `<C-w><` | Move buffer width left (prepend number to `<` to do many at once)|
+| `<C-w>>` | Move buffer width right (prepend number to `>` to do many at once)|
 
 ### Scrolling
 | Command | Description |
@@ -169,6 +175,11 @@
 |---------|-------------|
 | `<Leader>xx` | Toggle diagnostics (Trouble) |
 | `<Leader>xX` | Buffer diagnostics (Trouble) |
+
+### Custom Plugins/Bindings
+| Command | Description |
+|---------|-------------|
+| `:SnykToggle` | Toggle the custom Snyk plugin (which requires a SNYK_TOKEN) |
 
 ---
 
