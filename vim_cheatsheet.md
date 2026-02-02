@@ -51,10 +51,6 @@
 | `<C-^>` | Switch to previous buffer |
 | `:jumps` | View entire jumplist |
 | `<Leader-a>` | Toggle Aerial (file tree/navigator) |
-| `<C-w>-` | Decrease buffer height (prepend number to `-` to do many at once)|
-| `<C-w>+` | Increase buffer height (prepend number to `+` to do many at once)|
-| `<C-w><` | Move buffer width left (prepend number to `<` to do many at once)|
-| `<C-w>>` | Move buffer width right (prepend number to `>` to do many at once)|
 
 ### Scrolling
 | Command | Description |
@@ -127,6 +123,10 @@
 |---------|-------------|
 | `<C-h>` `<C-j>` `<C-k>` `<C-l>` | Move between windows |
 | `<C-w>c` | **C**lose window (keep buffer) |
+| `<C-w>-` | Decrease buffer height size (prepend number to `-` to do many at once) **NOTE: this means, press Ctrl-w, wait, then press `-`** |
+| `<C-w>+` | Increase buffer height size (prepend number to `+` to do many at once)|
+| `<C-w><` | Move buffer width size left (prepend number to `<` to do many at once)|
+| `<C-w>>` | Move buffer width size right (prepend number to `>` to do many at once)|
 
 ### NvimTree
 | Command | Description |
