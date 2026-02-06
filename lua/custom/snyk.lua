@@ -71,6 +71,9 @@ local function disable_snyk()
   for _, client in ipairs(vim.lsp.get_clients { name = 'snyk' }) do
     client.stop()
   end
+  vim.defer_fn(function()
+    vim.fn.system "pkill -f 'snyk'"
+  end, 100)
   vim.notify('Snyk LSP disabled', vim.log.levels.INFO)
 end
 
@@ -82,12 +85,137 @@ vim.api.nvim_create_user_command('SnykToggle', function()
   end
 end, { desc = 'Toggle Snyk LSP' })
 
+local function prompt_snyk_choice()
+  if #vim.api.nvim_list_uis() == 0 then
+    vim.g.snyk_enabled = false
+    return
+  end
+
+  local lines = {
+    'Enable Snyk LSP?',
+    '',
+    'Yes, enable Snyk',
+    'No, keep disabled (default)',
+    '',
+    'Use arrows to select, Enter to confirm',
+  }
+
+  local width = 0
+  for _, line in ipairs(lines) do
+    width = math.max(width, #line)
+  end
+
+  local ui = vim.api.nvim_list_uis()[1]
+  width = math.min(math.max(width, 40), math.max(ui.width - 4, 40))
+  local height = #lines
+  local row = math.max(ui.height - height - 2, 0)
+  local col = math.max(math.floor((ui.width - width) / 2), 0)
+
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  vim.api.nvim_buf_set_option(buf, 'modifiable', false)
+  vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
+
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = 'editor',
+    row = row,
+    col = col,
+    width = width,
+    height = height,
+    style = 'minimal',
+    border = 'rounded',
+    focusable = true,
+    zindex = 50,
+  })
+
+  vim.api.nvim_win_set_option(win, 'cursorline', true)
+  vim.api.nvim_win_set_option(win, 'wrap', false)
+
+  vim.g.snyk_prompt_active = true
+  local group = vim.api.nvim_create_augroup('SnykPromptFocus', { clear = true })
+  vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter', 'WinLeave', 'BufLeave', 'FocusGained' }, {
+    group = group,
+    callback = function()
+      if vim.g.snyk_prompt_active and vim.api.nvim_win_is_valid(win) then
+        if vim.api.nvim_get_current_win() ~= win then
+          vim.api.nvim_set_current_win(win)
+        end
+      end
+    end,
+  })
+
+  local choice_index = 2
+  local option_rows = { 3, 4 }
+
+  local function update_cursor()
+    vim.api.nvim_win_set_cursor(win, { option_rows[choice_index], 0 })
+  end
+
+  update_cursor()
+
+  vim.schedule(function()
+    if vim.api.nvim_win_is_valid(win) then
+      vim.api.nvim_set_current_win(win)
+    end
+  end)
+
+  local function choose(enable)
+    vim.g.snyk_prompt_active = false
+    pcall(vim.api.nvim_del_augroup_by_id, group)
+    if vim.api.nvim_win_is_valid(win) then
+      vim.api.nvim_win_close(win, true)
+    end
+    if enable then
+      setup_snyk()
+      vim.g.snyk_enabled = true
+      vim.notify('Snyk LSP enabled', vim.log.levels.INFO)
+    else
+      vim.g.snyk_enabled = false
+      vim.notify('Snyk LSP disabled (use :SnykToggle to enable)', vim.log.levels.INFO)
+    end
+  end
+
+  local function map(lhs, fn)
+    vim.keymap.set('n', lhs, fn, { buffer = buf, nowait = true, silent = true })
+  end
+
+  local function toggle_choice()
+    choice_index = choice_index == 1 and 2 or 1
+    update_cursor()
+  end
+
+  map('<Up>', toggle_choice)
+  map('<Down>', toggle_choice)
+  map('<Left>', toggle_choice)
+  map('<Right>', toggle_choice)
+  map('k', toggle_choice)
+  map('j', toggle_choice)
+  map('<CR>', function()
+    choose(choice_index == 1)
+  end)
+  map('y', function()
+    choose(true)
+  end)
+  map('Y', function()
+    choose(true)
+  end)
+  map('n', function()
+    choose(false)
+  end)
+  map('N', function()
+    choose(false)
+  end)
+  map('<Esc>', function()
+    choose(false)
+  end)
+end
+
 function M.setup()
   if vim.g.snyk_enabled == false then
     return
   end
 
-  setup_snyk()
+  prompt_snyk_choice()
 end
 
 return M
