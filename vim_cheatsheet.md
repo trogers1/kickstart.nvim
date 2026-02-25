@@ -197,8 +197,6 @@
 | Command | Description |
 |---------|-------------|
 | `:AvanteAsk` | Ask in the Avante sidebar (uses OpenCode ACP) |
-| `@plan <task>` | Use OpenCode plan primary agent |
-| `@build <task>` | Use OpenCode build primary agent |
 | `@general <task>` | Use OpenCode general subagent |
 | `@explore <task>` | Use OpenCode explore subagent |
 

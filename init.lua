@@ -1008,7 +1008,7 @@ require('aerial').setup {
 }
 
 -- You probably also want to set a keymap to toggle aerial
-vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle!<CR>')
+vim.keymap.set('n', '<leader>ta', '<cmd>AerialToggle!<CR>')
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
