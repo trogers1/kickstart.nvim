@@ -183,6 +183,18 @@
 
 ---
 
+## 🤖 Agentic Coding
+
+### Opencode
+| Command | Description |
+|---------|-------------|
+| `<Leader>ocp` | Opencode prompt (plan agent); sends selection/line to opencode CLI |
+| `<Leader>ocb` | Opencode prompt (build agent); sends selection/line to opencode CLI |
+| `<Leader>oca` | Apply last diff from the most recent opencode response |
+| `<Leader>oa` | Apply diff under cursor (only in `opencode://<agent>` buffers) |
+
+---
+
 ## 💡 Pro Tips
 
 1. **Jumplist Navigation**: Use `<C-o>` and `<C-i>` instead of `<C-^>` for better navigation history
