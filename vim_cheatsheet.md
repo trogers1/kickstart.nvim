@@ -184,21 +184,15 @@
 ---
 
 ## 🤖 Agentic Coding
-
-### Opencode
 | Command | Description |
 |---------|-------------|
 | `<Leader>ocp` | Opencode prompt (plan agent); sends selection/line to opencode CLI |
 | `<Leader>ocb` | Opencode prompt (build agent); sends selection/line to opencode CLI |
 | `<Leader>oca` | Apply last diff from the most recent opencode response |
 | `<Leader>oa` | Apply diff under cursor (only in `opencode://<agent>` buffers) |
-
-### Avante (ACP)
-| Command | Description |
-|---------|-------------|
 | `:AvanteAsk` | Ask in the Avante sidebar (uses OpenCode ACP) |
-| `@general <task>` | Use OpenCode general subagent |
-| `@explore <task>` | Use OpenCode explore subagent |
+| `@general <task>` | Use OpenCode general subagent within Avante Chat |
+| `@explore <task>` | Use OpenCode explore subagent within Avante Chat |
 
 ---
 
