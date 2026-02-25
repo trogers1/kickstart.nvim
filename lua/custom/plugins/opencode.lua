@@ -15,21 +15,18 @@ return {
         })
       end
 
-      vim.keymap.set({ 'n', 'v' }, '<leader>ocp', function()
-        if opencode.is_opencode_buffer(vim.api.nvim_get_current_buf()) then
-          opencode.run_followup 'plan'
-        else
-          opencode.run 'plan'
-        end
-      end, { desc = 'Opencode prompt (plan)' })
+      local function map_agent(key, agent, label)
+        vim.keymap.set({ 'n', 'v' }, '<leader>oc' .. key, function()
+          if opencode.is_opencode_buffer(vim.api.nvim_get_current_buf()) then
+            opencode.run_followup(agent)
+          else
+            opencode.run(agent)
+          end
+        end, { desc = 'Opencode prompt (' .. label .. ')' })
+      end
 
-      vim.keymap.set({ 'n', 'v' }, '<leader>ocb', function()
-        if opencode.is_opencode_buffer(vim.api.nvim_get_current_buf()) then
-          opencode.run_followup 'build'
-        else
-          opencode.run 'build'
-        end
-      end, { desc = 'Opencode prompt (build)' })
+      map_agent('p', 'plan', 'plan')
+      map_agent('b', 'build', 'build')
 
       vim.keymap.set('n', '<leader>oca', function()
         opencode.apply_last_diff()

@@ -8,7 +8,7 @@ M.config = {
     build = 'build',
   },
   model = nil,
-  diff_hint = 'Return a diff in a ```diff``` block. Prefer unified diff with diff --git headers and a/ b/ paths. Apply_patch format is also acceptable. If anything is ambiguous, pick the most reasonable default and state it in one sentence before the diff, then provide the diff.',
+  diff_hint = 'If reasonable to suggest diffs, return all diffs in a ```diff``` block. Prefer unified diff with diff --git headers and a/ b/ paths. Apply_patch format is also acceptable. If anything is ambiguous, pick the most reasonable default and state it in one sentence before the diff, then provide the diff.',
 }
 
 M.state = {
@@ -30,8 +30,8 @@ local function get_selection()
     return line, line, text
   end
 
-  local start_pos = vim.fn.getpos("'<")
-  local end_pos = vim.fn.getpos("'>")
+  local start_pos = vim.fn.getpos "'<"
+  local end_pos = vim.fn.getpos "'>"
   local start_line = start_pos[2]
   local end_line = end_pos[2]
   if start_line == 0 or end_line == 0 then
@@ -63,12 +63,12 @@ local function extract_diff(text)
     return nil
   end
 
-  local diff_block = text:match('```diff\n(.-)\n```')
+  local diff_block = text:match '```diff\n(.-)\n```'
   if diff_block and diff_block ~= '' then
     return diff_block
   end
 
-  local diff_start = text:find('diff %-%-git ')
+  local diff_start = text:find 'diff %-%-git '
   if diff_start then
     return text:sub(diff_start)
   end
@@ -90,7 +90,7 @@ local function normalize_diff(diff_text)
   local min_indent = nil
   for _, line in ipairs(lines) do
     if line ~= '' then
-      local indent = line:match('^(%s*)')
+      local indent = line:match '^(%s*)'
       if indent then
         local len = #indent
         if min_indent == nil or len < min_indent then
@@ -109,23 +109,23 @@ local function normalize_diff(diff_text)
   end
 
   local normalized = table.concat(lines, '\n')
-  if not normalized:match('\n$') then
+  if not normalized:match '\n$' then
     normalized = normalized .. '\n'
   end
   return normalized
 end
 
 local function looks_like_apply_patch(diff_text)
-  return diff_text:match('^%*%*%* Begin Patch') or diff_text:match('^%*%*%* Update File:')
+  return diff_text:match '^%*%*%* Begin Patch' or diff_text:match '^%*%*%* Update File:'
 end
 
 local function looks_like_unified_diff(diff_text)
-  if diff_text:match('^diff %-%-git ') then
+  if diff_text:match '^diff %-%-git ' then
     return true
   end
 
-  local has_from = diff_text:match('^%-%-%- ')
-  local has_to = diff_text:match('^%+%+%+ ')
+  local has_from = diff_text:match '^%-%-%- '
+  local has_to = diff_text:match '^%+%+%+ '
   return has_from and has_to
 end
 
@@ -164,14 +164,14 @@ local function parse_apply_patch(diff_text)
 
   while idx <= #lines do
     local line = lines[idx]
-    local add_path = line:match('^%*%*%* Add File: (.+)$')
-    local del_path = line:match('^%*%*%* Delete File: (.+)$')
-    local upd_path = line:match('^%*%*%* Update File: (.+)$')
+    local add_path = line:match '^%*%*%* Add File: (.+)$'
+    local del_path = line:match '^%*%*%* Delete File: (.+)$'
+    local upd_path = line:match '^%*%*%* Update File: (.+)$'
 
     if add_path then
       idx = idx + 1
       local content = {}
-      while idx <= #lines and not lines[idx]:match('^%*%*%* ') do
+      while idx <= #lines and not lines[idx]:match '^%*%*%* ' do
         local add_line = lines[idx]
         if add_line:sub(1, 1) == '+' then
           table.insert(content, add_line:sub(2))
@@ -187,12 +187,12 @@ local function parse_apply_patch(diff_text)
     elseif upd_path then
       idx = idx + 1
       local move_to = nil
-      if lines[idx] and lines[idx]:match('^%*%*%* Move to: ') then
-        move_to = lines[idx]:match('^%*%*%* Move to: (.+)$')
+      if lines[idx] and lines[idx]:match '^%*%*%* Move to: ' then
+        move_to = lines[idx]:match '^%*%*%* Move to: (.+)$'
         idx = idx + 1
       end
       local hunk_lines = {}
-      while idx <= #lines and not lines[idx]:match('^%*%*%* ') do
+      while idx <= #lines and not lines[idx]:match '^%*%*%* ' do
         table.insert(hunk_lines, lines[idx])
         idx = idx + 1
       end
@@ -221,7 +221,7 @@ local function build_unified_update(path, hunk_text)
 end
 
 local function open_scratch(title)
-  vim.cmd('botright vnew')
+  vim.cmd 'botright vnew'
   local buf = vim.api.nvim_get_current_buf()
   vim.bo[buf].buftype = 'nofile'
   vim.bo[buf].bufhidden = 'wipe'
@@ -239,7 +239,19 @@ local function is_opencode_buffer(buf)
     return false
   end
   local name = vim.api.nvim_buf_get_name(buf)
-  return name:match('^opencode://') ~= nil
+  return name:match '^opencode://' ~= nil
+end
+
+local function with_modifiable(buf, fn)
+  if not vim.api.nvim_buf_is_valid(buf) then
+    return false
+  end
+
+  vim.api.nvim_set_option_value('modifiable', true, { buf = buf })
+  vim.api.nvim_set_option_value('readonly', false, { buf = buf })
+  local ok, err = pcall(fn)
+  vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
+  return ok, err
 end
 
 local function set_buffer_lines(buf, output)
@@ -248,17 +260,15 @@ local function set_buffer_lines(buf, output)
   end
 
   local lines = vim.split(output or '', '\n', { plain = true })
-  vim.api.nvim_set_option_value('modifiable', true, { buf = buf })
-  vim.api.nvim_set_option_value('readonly', false, { buf = buf })
-
-  local ok = pcall(vim.api.nvim_buf_set_lines, buf, 0, -1, false, lines)
+  local ok = with_modifiable(buf, function()
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  end)
   if not ok then
     vim.api.nvim_set_option_value('modifiable', true, { buf = buf })
     vim.api.nvim_set_option_value('readonly', false, { buf = buf })
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+    vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
   end
-
-  vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
 end
 
 local function append_lines(buf, lines)
@@ -266,11 +276,10 @@ local function append_lines(buf, lines)
     return
   end
 
-  local line_count = vim.api.nvim_buf_line_count(buf)
-  vim.api.nvim_set_option_value('modifiable', true, { buf = buf })
-  vim.api.nvim_set_option_value('readonly', false, { buf = buf })
-  vim.api.nvim_buf_set_lines(buf, line_count, line_count, false, lines)
-  vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
+  with_modifiable(buf, function()
+    local line_count = vim.api.nvim_buf_line_count(buf)
+    vim.api.nvim_buf_set_lines(buf, line_count, line_count, false, lines)
+  end)
 end
 
 local function append_followup_placeholder(buf, user_prompt)
@@ -294,10 +303,9 @@ local function replace_lines(buf, start_line, end_line, lines)
     return
   end
 
-  vim.api.nvim_set_option_value('modifiable', true, { buf = buf })
-  vim.api.nvim_set_option_value('readonly', false, { buf = buf })
-  vim.api.nvim_buf_set_lines(buf, start_line - 1, end_line, false, lines)
-  vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
+  with_modifiable(buf, function()
+    vim.api.nvim_buf_set_lines(buf, start_line - 1, end_line, false, lines)
+  end)
 end
 
 local function attach_apply_map(buf)
@@ -310,6 +318,12 @@ local function attach_apply_map(buf)
   end, { buffer = buf, desc = 'Opencode apply diff under cursor' })
 end
 
+local function maybe_attach_apply(buf, has_diff)
+  if has_diff then
+    attach_apply_map(buf)
+  end
+end
+
 local function show_output(agent, output, existing_buf, has_diff)
   local title = string.format('opencode://%s', agent)
   local buf = existing_buf
@@ -320,9 +334,7 @@ local function show_output(agent, output, existing_buf, has_diff)
   end
 
   set_buffer_lines(buf, output)
-  if has_diff then
-    attach_apply_map(buf)
-  end
+  maybe_attach_apply(buf, has_diff)
   return buf
 end
 
@@ -333,9 +345,7 @@ local function append_output(buf, output, has_diff, response_line)
   end
   local lines = vim.split(text, '\n', { plain = true })
   replace_lines(buf, response_line, response_line, lines)
-  if has_diff then
-    attach_apply_map(buf)
-  end
+  maybe_attach_apply(buf, has_diff)
 end
 
 local function show_pending(agent)
@@ -343,6 +353,20 @@ local function show_pending(agent)
   local buf = open_scratch(title)
   set_buffer_lines(buf, 'Waiting for opencode response...')
   return buf
+end
+
+local function show_pending_with_prompt(agent, user_prompt)
+  local title = string.format('opencode://%s', agent)
+  local buf = open_scratch(title)
+  local lines = {
+    'Prompt:',
+    '  ' .. user_prompt,
+    '',
+    'Response:',
+    '  Waiting for opencode response...',
+  }
+  set_buffer_lines(buf, table.concat(lines, '\n'))
+  return buf, 5
 end
 
 local function run_command(cmd, stdin, on_done)
@@ -391,14 +415,14 @@ local function run_command(cmd, stdin, on_done)
 end
 
 local function guess_patch_strip(diff_text)
-  if diff_text:match('^%-%-%- a/') or diff_text:match('^%+%+%+ b/') then
+  if diff_text:match '^%-%-%- a/' or diff_text:match '^%+%+%+ b/' then
     return 1
   end
   return 0
 end
 
 local function try_patch_apply(diff_text, on_done)
-  if vim.fn.executable('patch') ~= 1 then
+  if vim.fn.executable 'patch' ~= 1 then
     vim.notify('patch command not found for fallback apply.', vim.log.levels.ERROR)
     if on_done then
       on_done(false)
@@ -420,8 +444,8 @@ local function try_patch_apply(diff_text, on_done)
 
     run_command({ 'patch', string.format('-p%d', p), '-N', '-r', '-' }, diff_text, function(code, stdout, stderr)
       if code == 0 then
-        vim.notify('Applied diff with patch fallback.')
-        vim.cmd('checktime')
+        vim.notify 'Applied diff with patch fallback.'
+        vim.cmd 'checktime'
         if on_done then
           on_done(true)
         end
@@ -435,6 +459,18 @@ local function try_patch_apply(diff_text, on_done)
   attempt(1)
 end
 
+local function fallback_patch(normalized, message, on_done)
+  vim.notify(message .. ' Trying patch fallback...', vim.log.levels.WARN)
+  try_patch_apply(normalized, function(ok)
+    if on_done then
+      on_done(ok)
+    end
+    if not ok then
+      vim.notify(message, vim.log.levels.ERROR)
+    end
+  end)
+end
+
 local function apply_unified_diff(diff_text, on_done)
   local normalized = normalize_diff(diff_text)
   run_command({ 'git', 'apply', '--check', '--whitespace=nowarn', '-' }, normalized, function(code, stdout, stderr)
@@ -444,8 +480,8 @@ local function apply_unified_diff(diff_text, on_done)
           if on_done then
             on_done(true)
           end
-          vim.notify('Applied diff with git apply.')
-          vim.cmd('checktime')
+          vim.notify 'Applied diff with git apply.'
+          vim.cmd 'checktime'
           return
         end
 
@@ -453,22 +489,14 @@ local function apply_unified_diff(diff_text, on_done)
         if message_apply == '' then
           message_apply = 'git apply failed to apply diff.'
         end
-        vim.notify(message_apply .. ' Trying patch fallback...', vim.log.levels.WARN)
-        try_patch_apply(normalized, function(ok)
-          if on_done then
-            on_done(ok)
-          end
-          if not ok then
-            vim.notify(message_apply, vim.log.levels.ERROR)
-          end
-        end)
+        fallback_patch(normalized, message_apply, on_done)
       end)
       return
     end
 
     run_command({ 'git', 'apply', '--reverse', '--check', '--whitespace=nowarn', '-' }, normalized, function(code_rev, stdout_rev, stderr_rev)
       if code_rev == 0 then
-        vim.notify('Diff already applied.')
+        vim.notify 'Diff already applied.'
         if on_done then
           on_done(true)
         end
@@ -479,16 +507,7 @@ local function apply_unified_diff(diff_text, on_done)
       if message == '' then
         message = 'git apply failed to apply diff.'
       end
-      vim.notify(message .. ' Trying patch fallback...', vim.log.levels.WARN)
-
-      try_patch_apply(normalized, function(ok)
-        if on_done then
-          on_done(ok)
-        end
-        if not ok then
-          vim.notify(message, vim.log.levels.ERROR)
-        end
-      end)
+      fallback_patch(normalized, message, on_done)
     end)
   end)
 end
@@ -502,8 +521,8 @@ local function apply_apply_patch(diff_text)
 
   local function apply_next(index)
     if index > #ops then
-      vim.notify('Applied apply_patch operations.')
-      vim.cmd('checktime')
+      vim.notify 'Applied apply_patch operations.'
+      vim.cmd 'checktime'
       return
     end
 
@@ -584,11 +603,11 @@ local function collect_diff_blocks(lines)
   local blocks = {}
   local idx = 1
   while idx <= #lines do
-    if lines[idx]:match('^```diff%s*$') then
+    if lines[idx]:match '^```diff%s*$' then
       local start_line = idx
       local content = {}
       idx = idx + 1
-      while idx <= #lines and not lines[idx]:match('^```%s*$') do
+      while idx <= #lines and not lines[idx]:match '^```%s*$' do
         table.insert(content, lines[idx])
         idx = idx + 1
       end
@@ -654,6 +673,30 @@ local function build_followup_prompt(user_prompt)
   return prompt
 end
 
+local function build_cmd(agent)
+  local cmd = { M.config.bin }
+  vim.list_extend(cmd, M.config.run_args)
+  vim.list_extend(cmd, { '--agent', M.config.agents[agent] or agent })
+  if M.config.model and M.config.model ~= '' then
+    vim.list_extend(cmd, { '--model', M.config.model })
+  end
+  return cmd
+end
+
+local function parse_response(code, stdout, stderr)
+  if code ~= 0 then
+    local message = stderr ~= '' and stderr or ('opencode failed with code ' .. tostring(code))
+    return nil, message, vim.log.levels.ERROR
+  end
+
+  if stdout == '' then
+    local message = stderr ~= '' and stderr or 'No response received.'
+    return nil, message, vim.log.levels.WARN
+  end
+
+  return stdout, nil, nil
+end
+
 function M.run_followup(agent)
   local buf = vim.api.nvim_get_current_buf()
   if not is_opencode_buffer(buf) then
@@ -667,35 +710,25 @@ function M.run_followup(agent)
     end
 
     local prompt = build_followup_prompt(user_prompt)
-    local cmd = { M.config.bin }
-    vim.list_extend(cmd, M.config.run_args)
-    vim.list_extend(cmd, { '--agent', M.config.agents[agent] or agent })
-    if M.config.model and M.config.model ~= '' then
-      vim.list_extend(cmd, { '--model', M.config.model })
-    end
+    local cmd = build_cmd(agent)
 
     local response_line = append_followup_placeholder(buf, user_prompt)
 
     run_command(cmd, prompt, function(code, stdout, stderr)
-      if code ~= 0 then
-        local message = stderr ~= '' and stderr or ('opencode failed with code ' .. tostring(code))
-        vim.notify(message, vim.log.levels.ERROR)
-        append_output(buf, message, false, response_line)
+      local output, message, level = parse_response(code, stdout, stderr)
+      if not output then
+        if message then
+          vim.notify(message, level)
+        end
+        append_output(buf, message or '', false, response_line)
         return
       end
 
-      if stdout == '' then
-        local message = stderr ~= '' and stderr or 'No response received.'
-        vim.notify(message, vim.log.levels.WARN)
-        append_output(buf, message, false, response_line)
-        return
-      end
-
-      M.state.last_response = stdout
-      M.state.last_diff = normalize_diff(extract_diff(stdout))
+      M.state.last_response = output
+      M.state.last_diff = normalize_diff(extract_diff(output))
       M.state.last_prompt = prompt
       M.state.last_agent = agent
-      append_output(buf, stdout, M.state.last_diff ~= nil, response_line)
+      append_output(buf, output, M.state.last_diff ~= nil, response_line)
     end)
   end)
 end
@@ -716,33 +749,23 @@ function M.run(agent)
     M.state.last_prompt = prompt
     M.state.last_agent = agent
 
-    local cmd = { M.config.bin }
-    vim.list_extend(cmd, M.config.run_args)
-    vim.list_extend(cmd, { '--agent', M.config.agents[agent] or agent })
-    if M.config.model and M.config.model ~= '' then
-      vim.list_extend(cmd, { '--model', M.config.model })
-    end
+    local cmd = build_cmd(agent)
 
-    local pending_buf = show_pending(agent)
+    local pending_buf, response_line = show_pending_with_prompt(agent, user_prompt)
 
     run_command(cmd, prompt, function(code, stdout, stderr)
-      if code ~= 0 then
-        local message = stderr ~= '' and stderr or ('opencode failed with code ' .. tostring(code))
-        vim.notify(message, vim.log.levels.ERROR)
-        show_output(agent, message, pending_buf)
+      local output, message, level = parse_response(code, stdout, stderr)
+      if not output then
+        if message then
+          vim.notify(message, level)
+        end
+        append_output(pending_buf, message or '', false, response_line)
         return
       end
 
-      if stdout == '' then
-        local message = stderr ~= '' and stderr or 'No response received.'
-        vim.notify(message, vim.log.levels.WARN)
-        show_output(agent, message, pending_buf)
-        return
-      end
-
-      M.state.last_response = stdout
-      M.state.last_diff = normalize_diff(extract_diff(stdout))
-      show_output(agent, stdout, pending_buf, M.state.last_diff ~= nil)
+      M.state.last_response = output
+      M.state.last_diff = normalize_diff(extract_diff(output))
+      append_output(pending_buf, output, M.state.last_diff ~= nil, response_line)
     end)
   end)
 end
