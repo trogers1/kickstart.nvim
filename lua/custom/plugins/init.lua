@@ -69,7 +69,11 @@ return {
       -- this file can contain specific instructions for your project
       instructions_file = 'AGENTS.md',
       provider = 'opencode',
-      auto_suggestions_provider = 'opencode',
+      -- Avante suggestions expect a built-in HTTP provider; disable them for ACP/opencode.
+      auto_suggestions_provider = nil,
+      behaviour = {
+        auto_suggestions = false,
+      },
       -- for example
       acp_providers = {
         ['opencode'] = {
