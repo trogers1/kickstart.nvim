@@ -75,8 +75,8 @@ return {
       instructions_file = 'AGENTS.md',
       -- ACP/opencode: switch between these via :AvanteSwitchProvider
       provider = 'opencode-build',
-      -- Avante suggestions expect a built-in HTTP provider; disable them for ACP/opencode.
-      auto_suggestions_provider = nil,
+      -- Use a lightweight ACP provider for autosuggestions.
+      auto_suggestions_provider = 'opencode-suggest',
       behaviour = {
         auto_suggestions = false,
         -- IMPORTANT: don't auto-approve ACP tool permissions
@@ -91,6 +91,11 @@ return {
         ['opencode-plan'] = {
           command = 'opencode',
           args = { '--agent', 'plan', 'acp' },
+        },
+        ['opencode-suggest'] = {
+          command = 'opencode',
+          -- Lightweight/cheap model for inline suggestions
+          args = { '--model', 'openai/gpt-4o-mini', '--agent', 'build', 'acp' },
         },
         -- Example model override
         ['opencode-gpt5-build'] = {
