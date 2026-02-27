@@ -57,28 +57,45 @@ return {
     },
   },
   {
-    'yetone/avante.nvim',
+    -- 'yetone/avante.nvim',
+    -- Fork (remote): git@github.com:trogers1/avante-with-permissions.nvim.git
+    'trogers1/avante-with-permissions.nvim',
+    -- Fork (local):
+    -- dir = vim.fn.expand('~/.config/avante-with-permissions.nvim'),
+    -- name = 'avante.nvim',
     event = 'VeryLazy',
     version = false, -- Never set this value to "*"! Never!
+    -- WARN: must add this setting! ! !
+    build = vim.fn.has 'win32' ~= 0 and 'powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false' or 'make',
     ---@module 'avante'
     ---@type avante.Config
     opts = {
       -- add any opts here
-      -- WARN: must add this setting! ! !
-      build = vim.fn.has 'win32' ~= 0 and 'powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false' or 'make',
       -- this file can contain specific instructions for your project
       instructions_file = 'AGENTS.md',
-      provider = 'opencode',
+      -- ACP/opencode: switch between these via :AvanteSwitchProvider
+      provider = 'opencode-build',
       -- Avante suggestions expect a built-in HTTP provider; disable them for ACP/opencode.
       auto_suggestions_provider = nil,
       behaviour = {
         auto_suggestions = false,
+        -- IMPORTANT: don't auto-approve ACP tool permissions
+        auto_approve_tool_permissions = false,
       },
       -- for example
       acp_providers = {
-        ['opencode'] = {
+        ['opencode-build'] = {
           command = 'opencode',
-          args = { 'acp' },
+          args = { '--agent', 'build', 'acp' },
+        },
+        ['opencode-plan'] = {
+          command = 'opencode',
+          args = { '--agent', 'plan', 'acp' },
+        },
+        -- Example model override
+        ['opencode-gpt5-build'] = {
+          command = 'opencode',
+          args = { '--model', 'openai/gpt-5.3-codex', '--agent', 'build', 'acp' },
         },
       },
       -- I'm going through opencode for now, so no actual providers need set up
