@@ -79,6 +79,43 @@ return {
         -- IMPORTANT: don't auto-approve ACP tool permissions
         auto_approve_tool_permissions = false,
       },
+      -- Avante-native permissions (used for non-ACP providers)
+      permission = {
+        bash = {
+          ['*'] = 'ask',
+          ['git *'] = 'ask',
+          -- git READ-only
+          ['git status*'] = 'allow',
+          ['git status *'] = 'allow',
+          ['git log*'] = 'allow',
+          ['git log *'] = 'allow',
+          ['git rm *'] = 'allow',
+          ['git mv *'] = 'allow',
+          ['git diff'] = 'allow',
+          ['git diff *'] = 'allow',
+          ['git pull'] = 'allow',
+          ['git grep *'] = 'allow',
+          ['git bisect *'] = 'allow',
+          ['git show *'] = 'allow',
+          -- Git destructive
+          ['git branch *'] = 'deny',
+          ['git rebase *'] = 'deny',
+          ['git switch *'] = 'deny',
+          ['git tag *'] = 'deny',
+          ['git commit *'] = 'deny',
+          ['git push *'] = 'deny',
+          ['git checkout *'] = 'deny',
+          ['git add *'] = 'deny',
+          ['git worktree *'] = 'deny',
+          ['grep *'] = 'allow',
+          ['npx vitest *'] = 'allow',
+          ['sed *'] = 'allow',
+          ['ls *'] = 'allow',
+          ['npm *'] = 'allow',
+          ['openspec *'] = 'allow',
+        },
+        external_directory = 'ask',
+      },
       -- for example
       acp_providers = {
         ['opencode'] = {
