@@ -73,10 +73,7 @@ return {
       -- add any opts here
       -- this file can contain specific instructions for your project
       instructions_file = 'AGENTS.md',
-      -- ACP/opencode: switch between these via :AvanteSwitchProvider
-      provider = 'opencode-build',
-      -- Use a lightweight ACP provider for autosuggestions.
-      auto_suggestions_provider = 'opencode-suggest',
+      provider = 'opencode',
       behaviour = {
         auto_suggestions = false,
         -- IMPORTANT: don't auto-approve ACP tool permissions
@@ -84,23 +81,9 @@ return {
       },
       -- for example
       acp_providers = {
-        ['opencode-build'] = {
+        ['opencode'] = {
           command = 'opencode',
-          args = { '--agent', 'build', 'acp' },
-        },
-        ['opencode-plan'] = {
-          command = 'opencode',
-          args = { '--agent', 'plan', 'acp' },
-        },
-        ['opencode-suggest'] = {
-          command = 'opencode',
-          -- Lightweight/cheap model for inline suggestions
-          args = { '--model', 'openai/gpt-4o-mini', '--agent', 'build', 'acp' },
-        },
-        -- Example model override
-        ['opencode-gpt5-build'] = {
-          command = 'opencode',
-          args = { '--model', 'openai/gpt-5.3-codex', '--agent', 'build', 'acp' },
+          args = { 'acp' },
         },
       },
       -- I'm going through opencode for now, so no actual providers need set up
@@ -125,6 +108,9 @@ return {
       --   },
       -- },
     },
+    -- Lazy.nvim can't infer the correct Lua module name from the fork repo name,
+    -- so configure explicitly.
+    config = function(_, opts) require('avante').setup(opts) end,
     dependencies = {
       'nvim-lua/plenary.nvim',
       'MunifTanjim/nui.nvim',
