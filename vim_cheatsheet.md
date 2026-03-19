@@ -128,7 +128,7 @@
 | `<C-w><` | Move buffer width size left (prepend number to `<` to do many at once)|
 | `<C-w>>` | Move buffer width size right (prepend number to `>` to do many at once)|
 
-### NvimTree
+### Neo-tree
 | Command | Description |
 |---------|-------------|
 | `a` | **A**dd file or directory |
@@ -138,6 +138,10 @@
 | `c` | **C**opy |
 | `p` | **P**aste |
 | `R` | **R**efresh tree |
+
+Note: renaming or moving files from Neo-tree now notifies the LSP, so TypeScript imports can update automatically when the server supports it.
+
+Tip: for moving files or directories, `x` then navigate then `p` is usually better than a prompt-based move because it is faster and avoids typing the full destination path.
 
 ---
 
